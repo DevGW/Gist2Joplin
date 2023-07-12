@@ -130,6 +130,10 @@ class Gist2Joplin:
 # @param args: command line arguments
 # @return: None
 def procArgs(args):
+    # check for help flag
+    if len(args) == 2 and args[1] == "-h":
+        print(f"Usage: {args[0]}")
+        exit()
     if len(args) > 1:
         print(f"Usage: {args[0]}")
         exit()
