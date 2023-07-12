@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from sys import argv
@@ -11,7 +12,7 @@ class Gist2Joplin:
     # @return void
     def __init__(self, config):
         self.api_token = config['api_token']
-        self.api_url = f"https://api.github.com/gists?page=50&"
+        self.api_url = f"https://api.github.com/gists?per_page=50&"
         self.gists = []
         self.tags = []
         self.categorized_dict = {}
@@ -36,15 +37,30 @@ class Gist2Joplin:
     # @param self
     # @return void
     def get_gists(self):
-        print("Generating TOC for gists")
         page = 1
         gists = None
-        while gists or page == 1:
+        current_page_url = None
+        next_page_url = self.api_url # + f"page={page}"
+        # while gists or page <= 50:
+        while current_page_url != next_page_url:
+            current_page_url = next_page_url
             print(f"Getting gists page: {page}")
-            res = requests.get(self.api_url + f"page={page}", headers=self.headers)
+            res = requests.get(next_page_url, headers=self.headers)
             gists = res.json()
             self.gists += gists
             page += 1
+
+            # Check if the 'link' header is present in the response
+            if 'link' in res.headers:
+                link_header = res.headers['link']
+
+                # Extract URLs and their corresponding relations from the link header
+                links = re.findall(r'<(.*?)>; rel="(.*?)"', link_header)
+                # Find the 'next' page URL
+                for link, rel in links:
+                    if rel == 'next':
+                        next_page_url = link
+
         return self.gists
 
     # buildTagListDirectories(self) method
@@ -53,8 +69,9 @@ class Gist2Joplin:
     # then saves them to the output directory
     # @param self
     # @return void
-    def buildTagListDirectories(self):
-        content_dir = os.path.join("output", "gists")
+    def buildTagListDirectories(self, base_dir=os.getcwd()):
+        print("Building directories and Markdown files...")
+        content_dir = os.path.join(base_dir, "output", "gists")
         os.makedirs(content_dir, exist_ok=True)
         for gist in self.gists:
             # Check if the gist is public
@@ -113,15 +130,21 @@ class Gist2Joplin:
 # @param args: command line arguments
 # @return: None
 def procArgs(args):
-    if not len(args) == 2:
-        print(f"Usage: {args[0]} API_TOKEN")
+    if len(args) > 1:
+        print(f"Usage: {args[0]}")
         exit()
 
-    config = {
-        'api_token': args[1]
-    }
+    config_file_path = "./config.json"
+    if not os.path.isfile(config_file_path):
+        print("Error: config.json file not found.")
+        exit()
+
+    with open(config_file_path, "r") as config_file:
+        config = json.load(config_file)
+
     ### instantiate class
     gt = Gist2Joplin(config)
+    print("Starting Gist2Joplin...")
     gt.Start()
 
 if __name__ == '__main__':

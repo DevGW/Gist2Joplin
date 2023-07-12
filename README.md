@@ -24,14 +24,17 @@ Follow these steps to obtain a GitHub API token:
 3. Copy the generated token and securely store it.
 
 ### Configure Gist2Joplin
-
+Copy the `config.json.example` file to `config.json`:
+```bash
+cp config.json.example config.json
+```
 Edit the `config.json` file and provide your GitHub username and API token.
 
 ## Usage Examples
 
 To use Gist2Joplin, run the following command:
 ```bash
-python main.py
+python gist2joplin.py <api_token>
 ```
 
 
