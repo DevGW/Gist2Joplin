@@ -144,6 +144,6 @@ Contributions to Gist2Joplin are welcome! If you find any issues or have suggest
 - Write tests for any new functionality or modifications.
 
 
-Gist2Joplin is distributed under the [MIT License](LICENSE.md).
+Gist2Joplin is distributed under the [MIT License](LICENSE).
 
 ### tags: python, github, joplin
