@@ -3,7 +3,7 @@
 
 Gist2Joplin is a Python script that allows you to gather gists from GitHub and generate Joplin notes. It provides a seamless way to convert gists into Markdown notes, complete with tags and code blocks.
 
-## Installation
+## Installation   
 
 ### Clone the Repository
 ```bash
